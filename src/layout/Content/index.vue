@@ -4,20 +4,61 @@
     <!-- {{item}} -->
     <!-- <Card :content="`我是第${item}个`"></Card>
     </div> -->
+    <!-- 动态组件 -->
     <div class="tab">
       <div @click="switchCom(item)" v-for="item in data" :key="item.name">{{ item.name }}</div>
       <!-- 在Vue2 的时候is 是通过组件名称切换的 在Vue3 setup 是通过组件实例切换的 -->
     </div>
     <component :is="current.comName"></component>
+    <!-- 插槽 -->
+    <div class="slot">
+      <Dialog>
+        <!-- <template v-slot:header>
+        插入header
+      </template>
+      简写
+      <template #default="{ data }">
+        <div>{{ data.name }}--{{ data.name }}</div>
+      </template>
+      简写
+      <template #footer>
+        插入footer
+      </template> -->
+        <!-- 动态插槽 -->
+        <template #[name]>
+          <div>我在哪</div>
+        </template>
+      </Dialog>
+    </div>
+    <!-- 异步组件 -->
+    <Suspense>
+      <template #default>
+        <div>
+          <div style="width:500px; padding:10px;border: 1px solid #333;">
+            suspense组件有两个插槽。它们都只接收一个直接子节点。default 插槽里的节点会尽可能展示出来。如果不能，则展示 fallback 插槽里的节点。
+          </div>
+          <Atest></Atest>
+        </div>
+      </template>
+      <template #fallback>
+        <div>
+          loading……
+        </div>
+      </template>
+    </Suspense>
   </div>
 
 </template>
 
 <script setup lang="ts">
-import { reactive, markRaw } from 'vue';
+import { reactive, markRaw, ref, defineAsyncComponent } from 'vue';
 import A from './A.vue'
 import B from './B.vue'
 import C from './C.vue'
+import Dialog from '../../components/Dialog/index.vue';
+// 声明为异步组件
+const Atest = defineAsyncComponent(() => import('../../components/A/index.vue'))
+const name = ref('footer')
 type Tabs = {
   name: string,
   comName: any
@@ -57,7 +98,6 @@ const switchCom = (item: Tabs) => {
 
   .tab {
     display: flex;
-
 
     div {
       padding: 10px;
